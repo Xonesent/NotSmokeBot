@@ -1,0 +1,10 @@
+{
+  "Postgres": {
+    "Host": "localhost",
+    "Port": "54321",
+    "User": "postgres",
+    "Password": "test",
+    "DBName": "test_telegram",
+    "SSLMode": "disable"
+  }
+}
