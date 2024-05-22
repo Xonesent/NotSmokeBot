@@ -1,0 +1,12 @@
+OpenTelemetry:
+  URL: "http://localhost:14268/api/traces"
+  ServiceName: "NotSmokeBot"
+
+Mongo:
+  Host: "localhost"
+  Port: 27017
+  User: MONGO.USER
+  Password: MONGO.PASSWORD
+
+Telegram:
+  Token: TELEGRAM.TOKEN

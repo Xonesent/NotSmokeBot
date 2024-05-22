@@ -1,0 +1,6 @@
+[
+  {
+    "type": "drop_collection",
+    "collection": "users"
+  }
+]
