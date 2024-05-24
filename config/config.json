@@ -1,7 +1,7 @@
 {
   "Postgres": {
     "Host": "localhost",
-    "Port": "54321",
+    "Port": "54320",
     "User": "postgres",
     "Password": "test",
     "DBName": "test_telegram",

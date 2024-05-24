@@ -14,8 +14,8 @@ func Echo(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if err != nil {
 		log.Print(err.Error())
 	}
-	b.DeleteMessage(ctx, &bot.DeleteMessageParams{
-		ChatID:    update.Message.Chat.ID,
-		MessageID: update.Message.ID,
-	})
+	//b.DeleteMessage(ctx, &bot.DeleteMessageParams{
+	//	ChatID:    update.Message.Chat.ID,
+	//	MessageID: update.Message.ID,
+	//})
 }
