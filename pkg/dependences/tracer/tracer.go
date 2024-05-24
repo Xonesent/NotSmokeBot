@@ -3,9 +3,7 @@ package tracer
 import (
 	"NotSmokeBot/config"
 	"NotSmokeBot/pkg/constant"
-	"context"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
@@ -41,16 +39,6 @@ func NewTracer(cfg config.Config) {
 			propagation.TraceContext{}, propagation.Baggage{},
 		),
 	)
-}
-
-const TraceIDHeader = "X-Trace-OrgAppID"
-
-func StartFiberTrace(c *fiber.Ctx, spanName string) (context.Context, trace.Span) {
-	ctx, span := otel.Tracer("").Start(c.Context(), spanName)
-	traceID := span.SpanContext().TraceID().String()
-	c.Response().Header.Set(TraceIDHeader, traceID)
-	c.Locals(TraceIDHeader, traceID)
-	return ctx, span
 }
 
 func SpanSetErrWrap(span trace.Span, err, errorValue error, errorPlace string, args ...interface{}) error {

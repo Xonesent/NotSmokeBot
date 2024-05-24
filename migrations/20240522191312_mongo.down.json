@@ -1,6 +1,5 @@
 [
   {
-    "type": "drop_collection",
-    "collection": "users"
+    "drop": "users"
   }
 ]

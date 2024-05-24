@@ -17,6 +17,7 @@ type Config struct {
 		Port     string `validate:"required"`
 		User     string `validate:"required"`
 		Password string `validate:"required"`
+		Database string `validate:"required"`
 	}
 	Telegram struct {
 		Token string `validate:"required"`

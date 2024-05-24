@@ -36,25 +36,25 @@ func main() {
 	//	}
 	//}(constant.Tracer)
 
-	mngDB, err := mongodb.NewDB(cfg)
+	mngClient, err := mongodb.NewDB(cfg)
 	if err != nil {
 		zap.L().Fatal("Error connecting mongoDB", zap.Error(err))
 	}
-	defer func(mngDB *mongo.Client) {
-		if err = mngDB.Disconnect(context.Background()); err != nil {
+	defer func(mngClient *mongo.Client) {
+		if err = mngClient.Disconnect(context.Background()); err != nil {
 			zap.L().Error("MongoDB disconnect error", zap.Error(err))
 		} else {
 			zap.L().Info("MongoDB closed properly")
 		}
-	}(mngDB)
+	}(mngClient)
 
 	opts := []bot.Option{}
-	bot, err := bot.New(cfg.Telegram.Token, opts...)
+	b, err := bot.New(cfg.Telegram.Token, opts...)
 
 	s := server.NewServer(
 		cfg,
-		mngDB,
-		bot,
+		mngClient,
+		b,
 	)
 	if err = s.Run(); err != nil {
 		zap.L().Fatal("Cannot start server", zap.Error(err))

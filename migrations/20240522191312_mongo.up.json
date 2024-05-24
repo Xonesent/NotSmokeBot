@@ -1,6 +1,52 @@
 [
   {
-    "insert": "users",
-    "documents": [ {"name": "123"}]
+    "create": "users",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["tg_id", "last_mes", "progress", "quotation", "nick", "money"],
+        "properties": {
+          "tg_id": {
+            "bsonType": "long",
+            "description": "must be an integer and is required"
+          },
+          "last_mes": {
+            "bsonType": "string",
+            "description": "must be a string and is required",
+            "maxLength": 4096
+          },
+          "progress": {
+            "bsonType": "int",
+            "description": "must be an integer and is required"
+          },
+          "quotation": {
+            "bsonType": "int",
+            "description": "must be an integer and is required"
+          },
+          "nick": {
+            "bsonType": "string",
+            "description": "must be a string and is required",
+            "maxLength": 20
+          },
+          "money": {
+            "bsonType": "double",
+            "description": "must be a double and is required"
+          }
+        }
+      }
+    },
+    "validationLevel": "strict",
+    "validationAction": "error"
+  },
+  {
+    "createIndexes": "users",
+    "indexes": [
+      {
+        "key": {"tg_id": 1},
+        "name": "tg_id_unique_index",
+        "unique": true,
+        "background": true
+      }
+    ]
   }
 ]

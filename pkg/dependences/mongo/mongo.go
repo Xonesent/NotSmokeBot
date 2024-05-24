@@ -27,7 +27,5 @@ func NewDB(cfg *config.Config) (*mongo.Client, error) {
 		return nil, err
 	}
 
-	//client.Database("mydatabase").Collection("test").InsertOne(context.TODO(), bson.D{{"name", "John"}})
-
 	return client, nil
 }

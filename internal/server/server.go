@@ -12,9 +12,9 @@ import (
 )
 
 type Server struct {
-	cfg   *config.Config
-	mngDB *mongo.Client
-	bot   *bot.Bot
+	cfg       *config.Config
+	mngClient *mongo.Client
+	bot       *bot.Bot
 }
 
 func NewServer(
@@ -23,9 +23,9 @@ func NewServer(
 	bot *bot.Bot,
 ) *Server {
 	return &Server{
-		cfg:   cfg,
-		mngDB: mngDB,
-		bot:   bot,
+		cfg:       cfg,
+		mngClient: mngDB,
+		bot:       bot,
 	}
 }
 

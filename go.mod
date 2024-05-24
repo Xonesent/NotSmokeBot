@@ -3,6 +3,9 @@ module NotSmokeBot
 go 1.22
 
 require (
+	github.com/avito-tech/go-transaction-manager/drivers/mongo/v2 v2.0.0-rc8
+	github.com/avito-tech/go-transaction-manager/drivers/sql/v2 v2.0.0-rc6
+	github.com/avito-tech/go-transaction-manager/trm/v2 v2.0.0-rc8
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/go-telegram/bot v1.3.1
 	github.com/gofiber/fiber/v2 v2.52.4
