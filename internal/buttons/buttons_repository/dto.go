@@ -45,6 +45,8 @@ type FindUsersByFilter struct {
 	DeletedAt     bool
 	DeletedAtMore time.Time
 	DeletedAtLess time.Time
+	Limit         int64
+	Offset        int64
 }
 
 type User struct {
@@ -63,6 +65,7 @@ type User struct {
 
 func (d *User) toUserModel() model.User {
 	return model.User{
+		MongoId:     d.MongoId,
 		TgId:        d.TgId,
 		LastMessage: d.LastMessage,
 		Progress:    d.Progress,

@@ -2,6 +2,7 @@ package buttons_usecase
 
 import (
 	"NotSmokeBot/config"
+	"NotSmokeBot/pkg/templates/tg_resp"
 	"context"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-telegram/bot"
@@ -47,7 +48,9 @@ func (u *ButtonUseCase) StartBot(ctx context.Context, sentMessage SentMessage) e
 		if err != nil {
 			return err
 		}
-		//if _, err := u.b.SendMessage(ctx, &bot.SendMessageParams{ChatID: sentMessage.ChatId, Text: tg_resp.AlreadyExistResp})
+		if _, err = u.b.SendMessage(ctx, &bot.SendMessageParams{ChatID: sentMessage.ChatId, Text: tg_resp.RegistrationReq}); err != nil {
+			return err
+		}
 
 		return nil
 	}); err != nil {

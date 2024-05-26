@@ -2,6 +2,7 @@ package buttons_repository
 
 import (
 	"NotSmokeBot/config"
+	"NotSmokeBot/internal/model"
 	"NotSmokeBot/internal/store/bson_queries"
 	"NotSmokeBot/pkg/dependences/tracer"
 	"NotSmokeBot/pkg/templates/errlst"
@@ -10,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.opentelemetry.io/otel"
 	"time"
 )
@@ -116,14 +118,37 @@ func getUpdateParams(updateUserInfo UpdateUserInfo) (bson.M, bson.M, error) {
 	return filter, update, nil
 }
 
-func (r *ButtonsMNGRepository) FindUsersByFilter(ctx context.Context, findUsersByFilter FindUsersByFilter) {
+func (r *ButtonsMNGRepository) FindUsersByFilter(ctx context.Context, findUsersByFilter FindUsersByFilter) ([]model.User, error) {
 	ctx, span := otel.Tracer("").Start(ctx, "ButtonsMNGRepository.FindUsersByFilter")
 	defer span.End()
 
 	collection := r.db.Collection(bson_queries.UsersCollection)
+	filter, opts := getFindParams(findUsersByFilter)
+
+	cursor, err := collection.Find(context.TODO(), filter, opts)
+	if err != nil {
+		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.ServerError, err, "ButtonsMNGRepository.FindUsersByFilter.Find")
+	}
+	defer cursor.Close(context.TODO())
+
+	var users []User
+	if err := cursor.All(context.TODO(), &users); err != nil {
+		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.ServerError, err, "ButtonsMNGRepository.FindUsersByFilter.All")
+	}
+
+	if len(users) == 0 {
+		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.NothingFound, errors.New("NothingFound"), "ButtonsMNGRepository.FindUsersByFilter.len(users)")
+	}
+
+	var modelUsers []model.User
+	for _, user := range users {
+		modelUsers = append(modelUsers, user.toUserModel())
+	}
+
+	return modelUsers, nil
 }
 
-func getFindParams(findUsersByFilter FindUsersByFilter) (bson.M, error) {
+func getFindParams(findUsersByFilter FindUsersByFilter) (bson.M, *options.FindOptions) {
 	filter := bson.M{}
 
 	if len(findUsersByFilter.MongoId) != 0 {
@@ -164,5 +189,71 @@ func getFindParams(findUsersByFilter FindUsersByFilter) (bson.M, error) {
 		filter[bson_queries.QuotationColumnName] = quotationFilter
 	}
 
-	return filter, nil
+	if len(findUsersByFilter.Nick) != 0 {
+		filter[bson_queries.NickColumnName] = bson.M{"$in": findUsersByFilter.Nick}
+	}
+
+	moneyFilter := bson.M{}
+	if len(findUsersByFilter.Money) != 0 {
+		moneyFilter["$in"] = findUsersByFilter.Money
+	}
+	if findUsersByFilter.MoneyLess != nil {
+		moneyFilter["$lte"] = findUsersByFilter.MoneyLess
+	}
+	if findUsersByFilter.MoneyMore != nil {
+		moneyFilter["$gte"] = findUsersByFilter.MoneyMore
+	}
+	if len(moneyFilter) != 0 {
+		filter[bson_queries.MoneyColumnName] = moneyFilter
+	}
+
+	if len(findUsersByFilter.ChatId) != 0 {
+		filter[bson_queries.ChatIdColumnName] = bson.M{"$in": findUsersByFilter.ChatId}
+	}
+
+	createdAtFilter := bson.M{}
+	if !findUsersByFilter.CreatedAtLess.IsZero() {
+		createdAtFilter["$lte"] = findUsersByFilter.CreatedAtLess
+	}
+	if !findUsersByFilter.CreatedAtMore.IsZero() {
+		createdAtFilter["$gte"] = findUsersByFilter.CreatedAtMore
+	}
+	if len(createdAtFilter) != 0 {
+		filter[bson_queries.CreatedAtColumnName] = createdAtFilter
+	}
+
+	updatedAtFilter := bson.M{}
+	if !findUsersByFilter.UpdatedAtLess.IsZero() {
+		updatedAtFilter["$lte"] = findUsersByFilter.UpdatedAtLess
+	}
+	if !findUsersByFilter.UpdatedAtMore.IsZero() {
+		updatedAtFilter["$gte"] = findUsersByFilter.UpdatedAtMore
+	}
+	if len(updatedAtFilter) != 0 {
+		filter[bson_queries.UpdatedAtColumnName] = updatedAtFilter
+	}
+
+	deletedAtFilter := bson.M{}
+	if findUsersByFilter.DeletedAt != false {
+		deletedAtFilter["$ne"] = nil
+	}
+	if !findUsersByFilter.DeletedAtLess.IsZero() {
+		deletedAtFilter["$lte"] = findUsersByFilter.DeletedAtLess
+	}
+	if !findUsersByFilter.DeletedAtMore.IsZero() {
+		deletedAtFilter["$gte"] = findUsersByFilter.DeletedAtMore
+	}
+	if len(deletedAtFilter) != 0 {
+		filter[bson_queries.DeletedAtColumnName] = deletedAtFilter
+	}
+
+	findOptions := options.Find()
+	if findUsersByFilter.Offset != 0 {
+		findOptions.SetSkip(findUsersByFilter.Offset)
+	}
+	if findUsersByFilter.Limit != 0 {
+		findOptions.SetLimit(findUsersByFilter.Limit)
+	}
+
+	return filter, findOptions
 }
