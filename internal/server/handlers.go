@@ -17,7 +17,7 @@ func (s *Server) MapHandlers() error {
 		manager.WithCtxManager(trmcontext.DefaultManager),
 	)
 
-	buttonUseCase := buttons_usecase.NewButtonUseCase(buttonMNGRepository, s.cfg, trManager)
+	buttonUseCase := buttons_usecase.NewButtonUseCase(buttonMNGRepository, s.cfg, trManager, s.bot)
 
 	buttonHandlers := telegram.NewButtonHandler(buttonUseCase, s.cfg)
 

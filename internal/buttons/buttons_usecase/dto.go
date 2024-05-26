@@ -5,14 +5,23 @@ import (
 	"NotSmokeBot/internal/model"
 )
 
-type StartMessage struct {
+type SentMessage struct {
 	Sender  model.TgId
 	Message string
+	ChatId  int64
 }
 
-func (d *StartMessage) toStartMessage() buttons_repository.StartMessage {
-	return buttons_repository.StartMessage{
+func (d *SentMessage) toStartMessage() buttons_repository.SentMessage {
+	return buttons_repository.SentMessage{
 		Sender:  d.Sender,
 		Message: d.Message,
+		ChatId:  d.ChatId,
+	}
+}
+
+func (d *SentMessage) toUpdateLastMessage() buttons_repository.UpdateUserInfo {
+	return buttons_repository.UpdateUserInfo{
+		TgId:        d.Sender,
+		LastMessage: d.Message,
 	}
 }

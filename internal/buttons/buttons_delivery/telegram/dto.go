@@ -6,9 +6,10 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-func toStartMessage(update *models.Update) buttons_usecase.StartMessage {
-	return buttons_usecase.StartMessage{
+func toSentMessage(update *models.Update) buttons_usecase.SentMessage {
+	return buttons_usecase.SentMessage{
 		Sender:  model.TgId(update.Message.From.ID),
+		ChatId:  update.Message.Chat.ID,
 		Message: update.Message.Text,
 	}
 }

@@ -7,5 +7,6 @@ import (
 )
 
 type ButtonMNGRepo interface {
-	InsertNewUser(ctx context.Context, startMessage buttons_repository.StartMessage) (primitive.ObjectID, error)
+	InsertNewUser(ctx context.Context, sentMessage buttons_repository.SentMessage) (primitive.ObjectID, error)
+	UpdateUserByIds(ctx context.Context, updateUserInfo buttons_repository.UpdateUserInfo) error
 }

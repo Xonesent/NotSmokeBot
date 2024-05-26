@@ -3,7 +3,6 @@ package telegram
 import (
 	"NotSmokeBot/config"
 	"context"
-	"fmt"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"go.opentelemetry.io/otel"
@@ -24,15 +23,14 @@ func NewButtonHandler(buttonUC ButtonUC, cfg *config.Config) *ButtonHandler {
 
 func (h *ButtonHandler) DefaultResponse() bot.HandlerFunc {
 	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
-		mes, err := b.SendMessage(ctx, &bot.SendMessageParams{
-			ChatID: update.Message.Chat.ID,
-			Text:   "DEFAULT",
-		})
+		ctx, span := otel.Tracer("").Start(ctx, "ButtonHandler.DefaultResponse")
+		defer span.End()
 
+		sentMessageDTO := toSentMessage(update)
+
+		err := h.buttonUC.DefaultResponse(ctx, sentMessageDTO)
 		if err != nil {
-			zap.L().Info(err.Error())
-		} else {
-			zap.L().Info(fmt.Sprintf("%v,", mes))
+			zap.L().Error(err.Error())
 		}
 	}
 }
@@ -42,8 +40,11 @@ func (h *ButtonHandler) StartBot() bot.HandlerFunc {
 		ctx, span := otel.Tracer("").Start(ctx, "ButtonHandler.StartBot")
 		defer span.End()
 
-		startMessageDTO := toStartMessage(update)
+		sentMessageDTO := toSentMessage(update)
 
-		h.buttonUC.StartBot(ctx, startMessageDTO)
+		err := h.buttonUC.StartBot(ctx, sentMessageDTO)
+		if err != nil {
+			zap.L().Error(err.Error())
+		}
 	}
 }

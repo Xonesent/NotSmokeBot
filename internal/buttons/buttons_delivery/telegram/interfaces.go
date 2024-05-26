@@ -7,7 +7,8 @@ import (
 )
 
 type ButtonUC interface {
-	StartBot(ctx context.Context, startMessage buttons_usecase.StartMessage) error
+	DefaultResponse(ctx context.Context, sentMessage buttons_usecase.SentMessage) error
+	StartBot(ctx context.Context, sentMessage buttons_usecase.SentMessage) error
 }
 
 type ButtonHDL interface {
