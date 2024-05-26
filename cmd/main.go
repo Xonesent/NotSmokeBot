@@ -36,7 +36,7 @@ func main() {
 	}
 
 	b, err := bot.New(os.Getenv("TG_TOKEN"), opts...)
-	if nil != err {
+	if err != nil {
 		panic(err)
 	}
 

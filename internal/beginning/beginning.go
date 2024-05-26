@@ -147,7 +147,6 @@ func getMoney(ctx context.Context, b *bot.Bot, update *models.Update) int {
 					ChatID: update.Message.Chat.ID,
 					Text:   "Дружище, скинь чиселку сколько денег на сиггареты тратишь, она обычно еще положительная",
 				})
-				logrus.Error("money ", err.Error())
 				lastMes = mes
 				continue
 			}
