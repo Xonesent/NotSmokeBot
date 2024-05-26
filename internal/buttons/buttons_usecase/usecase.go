@@ -2,10 +2,7 @@ package buttons_usecase
 
 import (
 	"NotSmokeBot/config"
-	"NotSmokeBot/pkg/templates/errlst"
-	"NotSmokeBot/pkg/templates/tg_resp"
 	"context"
-	"errors"
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/go-telegram/bot"
 	"go.opentelemetry.io/otel"
@@ -47,17 +44,10 @@ func (u *ButtonUseCase) StartBot(ctx context.Context, sentMessage SentMessage) e
 
 	if err := u.trManager.Do(ctx, func(ctx context.Context) error {
 		_, err := u.buttonMNGRepo.InsertNewUser(ctx, sentMessage.toStartMessage())
-		if err != nil && !errors.Is(err, errlst.AlreadyExists) {
+		if err != nil {
 			return err
 		}
-		if errors.Is(err, errlst.AlreadyExists) {
-			if _, err = u.b.SendMessage(ctx, &bot.SendMessageParams{
-				ChatID: sentMessage.ChatId,
-				Text:   tg_resp.AlreadyExistResp,
-			}); err != nil {
-				return err
-			}
-		}
+		//if _, err := u.b.SendMessage(ctx, &bot.SendMessageParams{ChatID: sentMessage.ChatId, Text: tg_resp.AlreadyExistResp})
 
 		return nil
 	}); err != nil {

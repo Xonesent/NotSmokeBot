@@ -1,11 +1,11 @@
 package telegram
 
 import (
-	"NotSmokeBot/pkg/utilities"
+	"NotSmokeBot/pkg/utils"
 	"github.com/go-telegram/bot"
 )
 
 func MapButtonRoutes(b *bot.Bot, h *ButtonHandler) {
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, h.StartBot())
-	b.RegisterHandlerMatchFunc(utilities.ValidateDefaultHandler(), h.DefaultResponse())
+	b.RegisterHandlerMatchFunc(utils.ValidateDefaultHandler(), h.DefaultResponse())
 }

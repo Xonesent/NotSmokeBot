@@ -23,6 +23,30 @@ type UpdateUserInfo struct {
 	DeletedAt   bool
 }
 
+type FindUsersByFilter struct {
+	MongoId       []primitive.ObjectID
+	TgId          []model.TgId
+	LastMessage   []string
+	Progress      []int64
+	ProgressMore  *int64
+	ProgressLess  *int64
+	Quotation     []int64
+	QuotationMore *int64
+	QuotationLess *int64
+	Nick          []string
+	Money         []float32
+	MoneyLess     *float32
+	MoneyMore     *float32
+	ChatId        []int64
+	CreatedAtMore time.Time
+	CreatedAtLess time.Time
+	UpdatedAtMore time.Time
+	UpdatedAtLess time.Time
+	DeletedAt     bool
+	DeletedAtMore time.Time
+	DeletedAtLess time.Time
+}
+
 type User struct {
 	MongoId     primitive.ObjectID `bson:"_id"`
 	TgId        model.TgId         `bson:"tg_id"`

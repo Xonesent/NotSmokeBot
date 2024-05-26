@@ -2,11 +2,11 @@ package telegram
 
 import (
 	"NotSmokeBot/config"
+	"NotSmokeBot/pkg/error_handler"
 	"context"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"go.opentelemetry.io/otel"
-	"go.uber.org/zap"
 )
 
 type ButtonHandler struct {
@@ -29,9 +29,8 @@ func (h *ButtonHandler) DefaultResponse() bot.HandlerFunc {
 		sentMessageDTO := toSentMessage(update)
 
 		err := h.buttonUC.DefaultResponse(ctx, sentMessageDTO)
-		if err != nil {
-			zap.L().Error(err.Error())
-		}
+
+		error_handler.ErrorHandler(ctx, b, update, err)
 	}
 }
 
@@ -43,8 +42,7 @@ func (h *ButtonHandler) StartBot() bot.HandlerFunc {
 		sentMessageDTO := toSentMessage(update)
 
 		err := h.buttonUC.StartBot(ctx, sentMessageDTO)
-		if err != nil {
-			zap.L().Error(err.Error())
-		}
+
+		error_handler.ErrorHandler(ctx, b, update, err)
 	}
 }

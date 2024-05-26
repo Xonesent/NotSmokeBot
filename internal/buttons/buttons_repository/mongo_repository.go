@@ -86,6 +86,7 @@ func getUpdateParams(updateUserInfo UpdateUserInfo) (bson.M, bson.M, error) {
 	if updateUserInfo.TgId != 0 {
 		filter[bson_queries.TgIdColumnName] = updateUserInfo.TgId
 	}
+	filter[bson_queries.DeletedAtColumnName] = nil
 
 	update := bson.M{}
 	if updateUserInfo.LastMessage != "" {
@@ -107,10 +108,61 @@ func getUpdateParams(updateUserInfo UpdateUserInfo) (bson.M, bson.M, error) {
 		update[bson_queries.DeletedAtColumnName] = time.Now()
 	}
 
-	if len(filter) == 0 || len(update) == 0 {
-		return filter, update, errors.New("NilUpdateParams")
+	if len(filter) == 1 || len(update) == 0 {
+		return filter, update, errors.New("NilFields")
 	}
 	update = bson.M{"$set": update}
 
 	return filter, update, nil
+}
+
+func (r *ButtonsMNGRepository) FindUsersByFilter(ctx context.Context, findUsersByFilter FindUsersByFilter) {
+	ctx, span := otel.Tracer("").Start(ctx, "ButtonsMNGRepository.FindUsersByFilter")
+	defer span.End()
+
+	collection := r.db.Collection(bson_queries.UsersCollection)
+}
+
+func getFindParams(findUsersByFilter FindUsersByFilter) (bson.M, error) {
+	filter := bson.M{}
+
+	if len(findUsersByFilter.MongoId) != 0 {
+		filter[bson_queries.IdColumnName] = bson.M{"$in": findUsersByFilter.MongoId}
+	}
+	if len(findUsersByFilter.TgId) != 0 {
+		filter[bson_queries.TgIdColumnName] = bson.M{"$in": findUsersByFilter.TgId}
+	}
+	if len(findUsersByFilter.LastMessage) != 0 {
+		filter[bson_queries.LastMessageColumnName] = bson.M{"$in": findUsersByFilter.LastMessage}
+	}
+
+	progressFilter := bson.M{}
+	if len(findUsersByFilter.Progress) != 0 {
+		progressFilter["$in"] = findUsersByFilter.Progress
+	}
+	if findUsersByFilter.ProgressLess != nil {
+		progressFilter["$lte"] = findUsersByFilter.ProgressLess
+	}
+	if findUsersByFilter.ProgressMore != nil {
+		progressFilter["$gte"] = findUsersByFilter.ProgressMore
+	}
+	if len(progressFilter) != 0 {
+		filter[bson_queries.ProgressColumnName] = progressFilter
+	}
+
+	quotationFilter := bson.M{}
+	if len(findUsersByFilter.Quotation) != 0 {
+		quotationFilter["$in"] = findUsersByFilter.Quotation
+	}
+	if findUsersByFilter.QuotationLess != nil {
+		quotationFilter["$lte"] = findUsersByFilter.QuotationLess
+	}
+	if findUsersByFilter.QuotationMore != nil {
+		quotationFilter["$gte"] = findUsersByFilter.QuotationMore
+	}
+	if len(quotationFilter) != 0 {
+		filter[bson_queries.QuotationColumnName] = quotationFilter
+	}
+
+	return filter, nil
 }
