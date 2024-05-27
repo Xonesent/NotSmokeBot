@@ -2,7 +2,7 @@ package tracer
 
 import (
 	"NotSmokeBot/config"
-	"NotSmokeBot/pkg/constant"
+	"NotSmokeBot/pkg/constant/const"
 	"fmt"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel"
@@ -26,14 +26,14 @@ func NewTracer(cfg config.Config) {
 		log.Fatalf("Cannot create Jaeger exporter: %s", err.Error())
 	}
 
-	constant.Tracer = tracesdk.NewTracerProvider(
+	_const.Tracer = tracesdk.NewTracerProvider(
 		tracesdk.WithBatcher(exp),
 		tracesdk.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceNameKey.String(cfg.OpenTelemetry.ServiceName),
 		)),
 	)
-	otel.SetTracerProvider(constant.Tracer)
+	otel.SetTracerProvider(_const.Tracer)
 	otel.SetTextMapPropagator(
 		propagation.NewCompositeTextMapPropagator(
 			propagation.TraceContext{}, propagation.Baggage{},

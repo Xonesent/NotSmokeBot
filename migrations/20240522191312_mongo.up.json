@@ -4,7 +4,7 @@
     "validator": {
       "$jsonSchema": {
         "bsonType": "object",
-        "required": ["tg_id", "last_mes", "progress", "quotation", "nick", "money", "chat_id", "created_at", "updated_at", "deleted_at"],
+        "required": ["tg_id", "last_mes", "progress", "quotation", "status", "nick", "money", "chat_id", "created_at", "updated_at", "deleted_at"],
         "properties": {
           "tg_id": {
             "bsonType": "long",
@@ -22,6 +22,11 @@
           "quotation": {
             "bsonType": "int",
             "description": "must be an integer and is required"
+          },
+          "action_status": {
+            "bsonType": "string",
+            "description": "must be a string and is required",
+            "maxLength": 30
           },
           "nick": {
             "bsonType": "string",
@@ -61,6 +66,7 @@
         "key": {"tg_id": 1},
         "name": "tg_id_unique_index",
         "unique": true,
+        "partialFilterExpression": { "deleted_at": null },
         "background": true
       }
     ]

@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"NotSmokeBot/config"
-	"NotSmokeBot/pkg/error_handler"
+	"NotSmokeBot/pkg/errors/error_handler"
 	"context"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -10,14 +10,16 @@ import (
 )
 
 type ButtonHandler struct {
-	buttonUC ButtonUC
-	cfg      *config.Config
+	cfg        *config.Config
+	buttonUC   ButtonUC
+	errHandler *error_handler.ErrorHandler
 }
 
-func NewButtonHandler(buttonUC ButtonUC, cfg *config.Config) *ButtonHandler {
+func NewButtonHandler(cfg *config.Config, buttonUC ButtonUC, errHandler *error_handler.ErrorHandler) *ButtonHandler {
 	return &ButtonHandler{
-		buttonUC: buttonUC,
-		cfg:      cfg,
+		cfg:        cfg,
+		buttonUC:   buttonUC,
+		errHandler: errHandler,
 	}
 }
 
@@ -30,7 +32,7 @@ func (h *ButtonHandler) DefaultResponse() bot.HandlerFunc {
 
 		err := h.buttonUC.DefaultResponse(ctx, sentMessageDTO)
 
-		error_handler.ErrorHandler(ctx, b, update, err)
+		h.errHandler.HandleError(ctx, b, update, err)
 	}
 }
 
@@ -43,6 +45,6 @@ func (h *ButtonHandler) StartBot() bot.HandlerFunc {
 
 		err := h.buttonUC.StartBot(ctx, sentMessageDTO)
 
-		error_handler.ErrorHandler(ctx, b, update, err)
+		h.errHandler.HandleError(ctx, b, update, err)
 	}
 }

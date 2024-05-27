@@ -10,16 +10,16 @@ import (
 )
 
 type ButtonUseCase struct {
-	buttonMNGRepo ButtonMNGRepo
 	cfg           *config.Config
+	buttonMNGRepo ButtonMNGRepo
 	trManager     *manager.Manager
 	b             *bot.Bot
 }
 
-func NewButtonUseCase(buttonMNGRepo ButtonMNGRepo, cfg *config.Config, trManager *manager.Manager, b *bot.Bot) *ButtonUseCase {
+func NewButtonUseCase(cfg *config.Config, buttonMNGRepo ButtonMNGRepo, trManager *manager.Manager, b *bot.Bot) *ButtonUseCase {
 	return &ButtonUseCase{
-		buttonMNGRepo: buttonMNGRepo,
 		cfg:           cfg,
+		buttonMNGRepo: buttonMNGRepo,
 		trManager:     trManager,
 		b:             b,
 	}
