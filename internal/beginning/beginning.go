@@ -28,9 +28,8 @@ func StartHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}); err != nil {
 		if err.Error() == errlist.UserExist || err.Error() == errlist.TransactionExist {
 			b.SendMessage(ctx, &bot.SendMessageParams{
-				ChatID:    update.Message.Chat.ID,
-				Text:      "Ты же уже стартовал бота?",
-				ParseMode: models.ParseModeMarkdown,
+				ChatID: update.Message.Chat.ID,
+				Text:   "Ты же уже стартовал бота?",
 			})
 		} else {
 			logrus.Error("register %s", err.Error())
@@ -50,9 +49,8 @@ func StartHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:    update.Message.Chat.ID,
-		Text:      string(content),
-		ParseMode: models.ParseModeMarkdown,
+		ChatID: update.Message.Chat.ID,
+		Text:   string(content),
 	})
 
 	done := make(chan struct{})
@@ -175,9 +173,8 @@ func Begin(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID:    update.CallbackQuery.Message.Message.Chat.ID,
-		Text:      string(content),
-		ParseMode: models.ParseModeMarkdown,
+		ChatID: update.CallbackQuery.Message.Message.Chat.ID,
+		Text:   string(content),
 	})
 
 	if update.CallbackQuery.Data == "begin_1" {

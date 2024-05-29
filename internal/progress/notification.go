@@ -9,14 +9,24 @@ import (
 	"fmt"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	"os"
+	"strconv"
 	"time"
 )
 
 func Notification(ctx context.Context, b *bot.Bot, update *models.Update) {
 	currentTime := time.Now()
-	timeFlags, timerFlags, timers := []int{11, 16, 20, 21}, []time.Time{}, []*time.Timer{}
+
+	valueInt1, _ := strconv.Atoi(os.Getenv("TIME_QUOTATION_HOURS_1"))
+	valueInt2, _ := strconv.Atoi(os.Getenv("TIME_QUOTATION_HOURS_2"))
+	valueInt3, _ := strconv.Atoi(os.Getenv("TIME_QUOTATION_HOURS_3"))
+	valueInt4, _ := strconv.Atoi(os.Getenv("TIME_QUOTATION_HOURS_4"))
+	valueInt5, _ := strconv.Atoi(os.Getenv("TIME_QUOTATION_MINUTES"))
+	valueInt6, _ := strconv.Atoi(os.Getenv("TIME_QUOTATION_PERIOD_SECONDS"))
+
+	timeFlags, timerFlags, timers := []int{valueInt1, valueInt2, valueInt3, valueInt4}, []time.Time{}, []*time.Timer{}
 	for _, value := range timeFlags {
-		timerFlags = append(timerFlags, time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), value, 0, 0, 0, currentTime.Location()))
+		timerFlags = append(timerFlags, time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), value, valueInt5, 0, 0, currentTime.Location()))
 	}
 	for index := range timerFlags {
 		if currentTime.After(timerFlags[index]) {
@@ -31,19 +41,23 @@ func Notification(ctx context.Context, b *bot.Bot, update *models.Update) {
 			select {
 			case <-timers[0].C:
 				sendNotification(ctx, b, update)
-				timerFlags[0] = timerFlags[0].AddDate(0, 0, 1)
+				//timerFlags[0] = timerFlags[0].AddDate(0, 0, 1)
+				timerFlags[0] = timerFlags[0].Add(time.Duration(valueInt6) * time.Second)
 				timers[0].Reset(timerFlags[0].Sub(time.Now()))
 			case <-timers[1].C:
 				sendNotification(ctx, b, update)
-				timerFlags[1] = timerFlags[1].AddDate(0, 0, 1)
+				//timerFlags[1] = timerFlags[1].AddDate(0, 0, 1)
+				timerFlags[1] = timerFlags[1].Add(time.Duration(valueInt6) * time.Second)
 				timers[1].Reset(timerFlags[1].Sub(time.Now()))
 			case <-timers[2].C:
 				sendSurvey(ctx, b, update)
-				timerFlags[2] = timerFlags[2].AddDate(0, 0, 1)
+				//timerFlags[2] = timerFlags[2].AddDate(0, 0, 1)
+				timerFlags[2] = timerFlags[2].Add(time.Duration(valueInt6) * time.Second)
 				timers[2].Reset(timerFlags[2].Sub(time.Now()))
 			case <-timers[3].C:
 				sendStatistic(ctx, b, update)
-				timerFlags[3] = timerFlags[3].AddDate(0, 0, 7)
+				//timerFlags[3] = timerFlags[3].AddDate(0, 0, 7)
+				timerFlags[3] = timerFlags[3].Add(time.Duration(valueInt6) * time.Second)
 				timers[3].Reset(timerFlags[3].Sub(time.Now()))
 			}
 		}
