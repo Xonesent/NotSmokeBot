@@ -25,20 +25,6 @@ func NewButtonUseCase(cfg *config.Config, buttonMNGRepo ButtonMNGRepo, trManager
 	}
 }
 
-func (u *ButtonUseCase) DefaultResponse(ctx context.Context, sentMessage SentMessage) error {
-	ctx, span := otel.Tracer("").Start(ctx, "ButtonUseCase.DefaultResponse")
-	defer span.End()
-
-	updateLastMessageDTO := sentMessage.toUpdateLastMessage()
-
-	err := u.buttonMNGRepo.UpdateUserByIds(ctx, updateLastMessageDTO)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (u *ButtonUseCase) StartBot(ctx context.Context, sentMessage SentMessage) error {
 	ctx, span := otel.Tracer("").Start(ctx, "ButtonUseCase.StartBot")
 	defer span.End()
@@ -48,10 +34,15 @@ func (u *ButtonUseCase) StartBot(ctx context.Context, sentMessage SentMessage) e
 		if err != nil {
 			return err
 		}
+
+		//time.Sleep(7 * time.Second)
+
+		if _, err = u.b.SendMessage(ctx, &bot.SendMessageParams{ChatID: sentMessage.ChatId, Text: tg_resp.StartResp}); err != nil {
+			return err
+		}
 		if _, err = u.b.SendMessage(ctx, &bot.SendMessageParams{ChatID: sentMessage.ChatId, Text: tg_resp.RegistrationReq}); err != nil {
 			return err
 		}
-
 		return nil
 	}); err != nil {
 		return err

@@ -1,4 +1,4 @@
-package buttons_repository
+package mongo_default
 
 import (
 	"NotSmokeBot/config"
@@ -17,20 +17,20 @@ import (
 	"time"
 )
 
-type ButtonsMNGRepository struct {
+type DefaultMNGRepository struct {
 	cfg *config.Config
 	db  *mongo.Database
 }
 
-func NewButtonsMNGRepository(cfg *config.Config, db *mongo.Database) *ButtonsMNGRepository {
-	return &ButtonsMNGRepository{
+func NewDefaultMNGRepository(cfg *config.Config, db *mongo.Database) *DefaultMNGRepository {
+	return &DefaultMNGRepository{
 		cfg: cfg,
 		db:  db,
 	}
 }
 
-func (r *ButtonsMNGRepository) InsertNewUser(ctx context.Context, sentMessage SentMessage) (primitive.ObjectID, error) {
-	ctx, span := otel.Tracer("").Start(ctx, "ButtonsMNGRepository.InsertNewUser")
+func (r *DefaultMNGRepository) InsertNewUser(ctx context.Context, sentMessage SentMessage) (primitive.ObjectID, error) {
+	ctx, span := otel.Tracer("").Start(ctx, "DefaultMNGRepository.InsertNewUser")
 	defer span.End()
 
 	collection := r.db.Collection(bson_queries.UsersCollection)
@@ -51,32 +51,32 @@ func (r *ButtonsMNGRepository) InsertNewUser(ctx context.Context, sentMessage Se
 	)
 	if err != nil {
 		if mongo.IsDuplicateKeyError(err) {
-			return primitive.ObjectID{}, tracer.SpanSetErrWrap(span, errlst.AlreadyExistsError, err, "ButtonsMNGRepository.InsertNewUser.IsDuplicateKeyError")
+			return primitive.ObjectID{}, tracer.SpanSetErrWrap(span, errlst.AlreadyExistsError, err, "DefaultMNGRepository.InsertNewUser.IsDuplicateKeyError")
 		}
-		return primitive.ObjectID{}, tracer.SpanSetErrWrap(span, errlst.ServerError, err, "ButtonsMNGRepository.InsertNewUser.InsertOne")
+		return primitive.ObjectID{}, tracer.SpanSetErrWrap(span, errlst.ServerError, err, "DefaultMNGRepository.InsertNewUser.InsertOne")
 	}
 
 	value, ok := insertResult.InsertedID.(primitive.ObjectID)
 	if !ok {
-		return primitive.ObjectID{}, tracer.SpanSetErrWrap(span, errlst.ConversionError, errors.New("primitive.ObjectID convert error"), "ButtonsMNGRepository.InsertNewUser.ok")
+		return primitive.ObjectID{}, tracer.SpanSetErrWrap(span, errlst.ConversionError, errors.New("primitive.ObjectID convert error"), "DefaultMNGRepository.InsertNewUser.ok")
 	}
 
 	return value, nil
 }
 
-func (r *ButtonsMNGRepository) UpdateUserByIds(ctx context.Context, updateUserInfo UpdateUserInfo) error {
-	ctx, span := otel.Tracer("").Start(ctx, "ButtonsMNGRepository.UpdateUserByIds")
+func (r *DefaultMNGRepository) UpdateUserByIds(ctx context.Context, updateUserInfo UpdateUserInfo) error {
+	ctx, span := otel.Tracer("").Start(ctx, "DefaultMNGRepository.UpdateUserByIds")
 	defer span.End()
 
 	collection := r.db.Collection(bson_queries.UsersCollection)
 	filter, update, err := getUpdateParams(updateUserInfo)
 	if err != nil {
-		return tracer.SpanSetErrWrap(span, errlst.NilUpdateFieldsError, err, "ButtonsMNGRepository.UpdateUserByIds.getUpdateParams")
+		return tracer.SpanSetErrWrap(span, errlst.NilUpdateFieldsError, err, "DefaultMNGRepository.UpdateUserByIds.getUpdateParams")
 	}
 
 	_, err = collection.UpdateMany(context.TODO(), filter, update)
 	if err != nil {
-		return tracer.SpanSetErrWrap(span, errlst.ServerError, err, "ButtonsMNGRepository.UpdateUserByIds.UpdateMany")
+		return tracer.SpanSetErrWrap(span, errlst.ServerError, err, "DefaultMNGRepository.UpdateUserByIds.UpdateMany")
 	}
 
 	return nil
@@ -123,8 +123,8 @@ func getUpdateParams(updateUserInfo UpdateUserInfo) (bson.M, bson.M, error) {
 	return filter, update, nil
 }
 
-func (r *ButtonsMNGRepository) FindUsersByFilter(ctx context.Context, findUsersByFilter FindUsersByFilter) ([]model.User, error) {
-	ctx, span := otel.Tracer("").Start(ctx, "ButtonsMNGRepository.FindUsersByFilter")
+func (r *DefaultMNGRepository) FindUsersByFilter(ctx context.Context, findUsersByFilter FindUsersByFilter) ([]model.User, error) {
+	ctx, span := otel.Tracer("").Start(ctx, "DefaultMNGRepository.FindUsersByFilter")
 	defer span.End()
 
 	collection := r.db.Collection(bson_queries.UsersCollection)
@@ -132,17 +132,17 @@ func (r *ButtonsMNGRepository) FindUsersByFilter(ctx context.Context, findUsersB
 
 	cursor, err := collection.Find(context.TODO(), filter, opts)
 	if err != nil {
-		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.ServerError, err, "ButtonsMNGRepository.FindUsersByFilter.Find")
+		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.ServerError, err, "DefaultMNGRepository.FindUsersByFilter.Find")
 	}
 	defer cursor.Close(context.TODO())
 
 	var users []User
 	if err := cursor.All(context.TODO(), &users); err != nil {
-		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.ServerError, err, "ButtonsMNGRepository.FindUsersByFilter.All")
+		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.ServerError, err, "DefaultMNGRepository.FindUsersByFilter.All")
 	}
 
 	if len(users) == 0 {
-		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.NothingFoundError, errors.New("NothingFoundError"), "ButtonsMNGRepository.FindUsersByFilter.len(users)")
+		return []model.User{}, tracer.SpanSetErrWrap(span, errlst.NothingFoundError, errors.New("NothingFoundError"), "DefaultMNGRepository.FindUsersByFilter.len(users)")
 	}
 
 	var modelUsers []model.User

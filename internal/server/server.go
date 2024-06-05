@@ -4,6 +4,7 @@ import (
 	"NotSmokeBot/config"
 	"context"
 	"github.com/go-telegram/bot"
+	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 	"os"
@@ -14,23 +15,26 @@ import (
 type Server struct {
 	cfg       *config.Config
 	mngClient *mongo.Client
+	redis     *redis.Client
 	bot       *bot.Bot
 }
 
 func NewServer(
 	cfg *config.Config,
-	mngDB *mongo.Client,
+	mngClient *mongo.Client,
+	redis *redis.Client,
 	bot *bot.Bot,
 ) *Server {
 	return &Server{
 		cfg:       cfg,
-		mngClient: mngDB,
+		mngClient: mngClient,
+		redis:     redis,
 		bot:       bot,
 	}
 }
 
 func (s *Server) Run() error {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	defer cancel()
 
 	zap.L().Info("Trying to run server...")

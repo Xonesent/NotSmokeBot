@@ -19,8 +19,18 @@ type Config struct {
 		Password string `validate:"required"`
 		Database string `validate:"required"`
 	}
+	Redis struct {
+		Host         string `validate:"required"`
+		Port         string `validate:"required"`
+		MinIdleConns int    `validate:"required"`
+		PoolSize     int    `validate:"required"`
+		PoolTimeout  int    `validate:"required"`
+		Password     string `validate:"required"`
+		Database     int
+	}
 	Telegram struct {
-		Token string `validate:"required"`
+		Token      string `validate:"required"`
+		SessionTTL int    `validate:"required"`
 	}
 }
 

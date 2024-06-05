@@ -2,6 +2,6 @@ package status
 
 // Статусы для поля action_status
 const (
-	StatusCasual      = "casual"
-	StatusGettingNick = "nick"
+	CasualStatus      = "casual"
+	GettingNickStatus = "nick"
 )

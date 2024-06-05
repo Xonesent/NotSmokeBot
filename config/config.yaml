@@ -9,5 +9,15 @@ Mongo:
   Password: MONGO.PASSWORD
   Database: MONGO.DATABASE
 
+Redis:
+  Host: "localhost"
+  Port: 6379
+  MinIdleConns: 10
+  PoolSize: 10
+  PoolTimeout: 10
+  Password: REDIS.PASSWORD
+  Database: 0
+
 Telegram:
   Token: TELEGRAM.TOKEN
+  SessionTTL: 1800

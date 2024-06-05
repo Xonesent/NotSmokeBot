@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func NewDB(cfg *config.Config) (*mongo.Client, error) {
+func NewMongoDB(cfg *config.Config) (*mongo.Client, error) {
 	credential := options.Credential{
 		Username: cfg.Mongo.User,
 		Password: cfg.Mongo.Password,
